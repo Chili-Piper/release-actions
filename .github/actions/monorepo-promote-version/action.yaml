@@ -1,0 +1,40 @@
+name: Promote version
+description: Promote a version to a new environment
+inputs:
+  version:
+    required: true
+    description: "The version to be promoted"
+  environment:
+    description: "The environment to promote to"
+    required: true
+  google_credentials:
+    required: true
+    description: Google Credentials
+  registry:
+    required: true
+    description: "The images registry"
+  projects:
+    required: true
+    description: "The projects to promote, separated by comma"
+runs:
+  using: "composite"
+  steps:
+    - id: "auth"
+      uses: "google-github-actions/auth@v0"
+      with:
+        credentials_json: "${{ inputs.google_credentials }}"
+    - name: 'Set up Cloud SDK'
+      uses: "google-github-actions/setup-gcloud@v0"
+    - name: "Set up docker auth"
+      shell: bash
+      run: "gcloud auth configure-docker us-central1-docker.pkg.dev"
+    - name: retag
+      shell: bash
+      run: |
+        
+        IFS="," read -ra PROJECTS <<< "${{ inputs.projects }}"
+        REGISTRY="${{ inputs.registry }}"
+        
+        for PROJECT in "${PROJECTS[@]}"; do
+          gcloud artifacts docker tags add $REGISTRY/$PROJECT:${{ inputs.version }} $REGISTRY/$PROJECT:${{ inputs.version }}-${{ inputs.environment }}
+        done
