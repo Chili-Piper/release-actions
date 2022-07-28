@@ -31,10 +31,20 @@ runs:
     - name: retag
       shell: bash
       run: |
+        set -ex
         
         IFS="," read -ra PROJECTS <<< "${{ inputs.projects }}"
         REGISTRY="${{ inputs.registry }}"
         
+        FAILED=""
         for PROJECT in "${PROJECTS[@]}"; do
-          gcloud artifacts docker tags add $REGISTRY/$PROJECT:${{ inputs.version }} $REGISTRY/$PROJECT:${{ inputs.version }}-${{ inputs.environment }}
+          gcloud artifacts docker tags add $REGISTRY/$PROJECT:${{ inputs.version }} $REGISTRY/$PROJECT:${{ inputs.version }}-${{ inputs.environment }} || EXIT_CODE=$?
+          if [ $EXIT_CODE -ne 0 ]; then
+            FAILED+=" $PROJECT"
+          fi
         done
+        
+        if [ -n "$FAILED" ]; then
+          echo "Failed to retag images: $FAILED"
+          exit 0
+        fi
