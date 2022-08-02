@@ -39,7 +39,7 @@ runs:
         FAILED=""
         for PROJECT in "${PROJECTS[@]}"; do
           gcloud artifacts docker tags add $REGISTRY/$PROJECT:${{ inputs.version }} $REGISTRY/$PROJECT:${{ inputs.version }}-${{ inputs.environment }} || EXIT_CODE=$?
-          if [ $EXIT_CODE -ne 0 ]; then
+          if [ "$EXIT_CODE" -ne 0 ]; then
             FAILED+=" $PROJECT"
           fi
         done
