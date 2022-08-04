@@ -1,6 +1,5 @@
-# This is deprecated and will be removed in the future.
-name: Promote version
-description: Promote a version to a new environment
+name: Artifact Registry Image Tagger
+description: Adds tags to existing images in Artifact Registry.
 inputs:
   version:
     required: true
