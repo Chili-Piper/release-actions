@@ -32,12 +32,14 @@ runs:
       shell: bash
       run: |
         set -ex
-        
-        IFS="," read -ra PROJECTS <<< "${{ inputs.projects }}"
+
         REGISTRY="${{ inputs.registry }}"
+        PROJECTS_SANITIZED=$(echo "${{ inputs.projects }}" | tr -d '\n')
+        IFS="," read -ra PROJECTS <<< "$PROJECTS_SANITIZED"
         
         FAILED=""
         for PROJECT in "${PROJECTS[@]}"; do
+          PROJECT_SANITIZED=$(echo "$PROJECT" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
           EXIT_CODE=0
           gcloud artifacts docker tags add $REGISTRY/$PROJECT:${{ inputs.version }} $REGISTRY/$PROJECT:${{ inputs.version }}-${{ inputs.environment }} > /dev/null || EXIT_CODE=$?
           if [ "$EXIT_CODE" -ne "0" ]; then
