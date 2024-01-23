@@ -20,7 +20,7 @@ runs:
   using: "composite"
   steps:
     - id: "auth"
-      uses: "google-github-actions/auth@v0"
+      uses: "google-github-actions/auth@v2"
       with:
         credentials_json: "${{ inputs.google_credentials }}"
     - name: 'Set up Cloud SDK'
