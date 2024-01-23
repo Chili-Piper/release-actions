@@ -24,7 +24,7 @@ runs:
       with:
         credentials_json: "${{ inputs.google_credentials }}"
     - name: 'Set up Cloud SDK'
-      uses: "google-github-actions/setup-gcloud@v0"
+      uses: "google-github-actions/setup-gcloud@v2"
     - name: "Set up docker auth"
       shell: bash
       run: "gcloud auth configure-docker us-central1-docker.pkg.dev"
